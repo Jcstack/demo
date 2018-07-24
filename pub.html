@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		html,body{
+			box-sizing: border-box;
+		}
+		a{
+			text-decoration: none;
+		}
+		li
+		{
+			list-style: none;
+		}
+		.header
+		{
+			width: 100%;
+			height: 0;
+		}
+		.container
+		{
+			width: 95%;
+			margin: 0 auto;
+			position: relative;
+		}
+		.box
+		{
+			/*width: 150px;*/
+            padding: 5px;
+            float: left;
+		}
+		.box_image
+		{
+			padding: 5px;
+			border:1px solid #888;
+			box-shadow: 0 0 5px #888;
+			border-radius: 3px;
+		}
+		img
+		{
+			width: 150px;
+		}
+	</style>
+</head>
+<body>
+	<div class='header' id='header'></div>
+	<div class='container'>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/1.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/2.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/3.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/4.png">
+			</div>
+		</div>
+	
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/5.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/6.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/7.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/8.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/8.png">
+			</div>
+		</div>
+		<div class="box">
+			<div class="box_image">
+				<img data-url='' src="image/5.png">
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">			
+		window.onload=function()
+		{
+			//设置刷新移动顶部
+			window.location.href='#header';
+			//设置一个变量监听器，通过对象的访问器属性设置
+			var watch={
+				_cols:8,
+				_flag:false
+			};
+			Object.defineProperty(watch,'cols',
+			{
+				get:function()
+				{
+					return this._flag;
+				},
+				set:function(newCols)
+				{
+					if(newCols<=this._cols)
+					{
+						this._cols=newCols;
+						this._flag=true;
+					}else
+					{
+						this._cols=newCols;
+						this._flag=false;
+					}
+				}
+			})
+			var parent=document.querySelector('.container');
+			createElement(parent,watch);
+			//当页面大小变化时更改对应的显示
+			window.onresize=function()
+			{
+				imgLocation(parent,'.box',watch);
+			}
+			document.body.onscroll=function()
+			{
+				createElement(parent,watch);
+			}
+		}
+		//图片瀑布流显示函数
+		function imgLocation(parent,content,watch)
+		{
+			var content=document.querySelectorAll(content);
+			var contentArr=Array.prototype.slice.apply(content,[0]);
+			var boxWidth=contentArr[0].offsetWidth;	
+			var shoWidth=document.documentElement.clientWidth||document.body.clientWidth;
+			var cols=Math.floor(shoWidth/boxWidth);
+			watch.cols=cols;
+			var flag=watch.cols;
+			parent.style.width=boxWidth*cols+'px';
+			var colArr=[];
+			minHeight(cols,contentArr,colArr,flag);
+		}
+		//最小高度函数
+		function minHeight(cols,contentArr,colArr,flag)
+		{
+	        for(var i=0;i<contentArr.length;i++)
+	        {
+            	if(i<cols)
+            	{
+            		colArr.push(contentArr[i].offsetHeight);
+            		if(!flag)
+            		{
+						var col=cols-1;
+	            		contentArr[i].style.position='static';
+            		}
+            	}else
+            	{
+		            var minHeight=Math.min.apply(null,colArr);
+		            var index=colArr.indexOf(minHeight);
+		            contentArr[i].style.position='absolute';
+		            contentArr[i].style.top=minHeight+'px';
+		            contentArr[i].style.left=contentArr[index].offsetLeft+'px';
+		            colArr[index]=colArr[index]+contentArr[i].offsetHeight;
+            	}
+            }
+		}
+		//创建图片容器函数
+		function createElement(parent,watch)
+		{
+			var last=document.querySelectorAll('.box');
+				var length=last.length;
+				var offsetTop=last[length-1].offsetTop;
+			    var scrollTop=document.documentElement.scrollTop||document.body.scrollTop;
+				var clientHeight=document.body.clientHeight||document.documentElement.clientHeight;
+				if(offsetTop<scrollTop+clientHeight)
+				{
+				var dataImg={'data':[{'src':'1.png'},{'src':'2.png'},{'src':'3.png'},{'src':'4.png'},{'src':'5.png'},{'src':'6.png'},{'src':'7.png'},{'src':'8.png'}]};
+				for(var i=0;i<dataImg.data.length;i++)
+				{
+					var content=document.createElement('div');
+					content.className='box';
+					parent.appendChild(content);
+					content.innerHTML='<div class="box_image">\
+					<img src="image/'+dataImg.data[i].src+'">\
+					</div>';
+				}
+			}
+			imgLocation(parent,'.box',watch);
+		}
+	</script>
+</body>
+</html>

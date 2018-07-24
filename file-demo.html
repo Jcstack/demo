@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">	
+	<title>file</title>
+</head>
+<body>
+	<table>
+		<thead>
+			<tr>
+				<td>商品</td>
+				<td>价格</td>
+				<td>产地</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>苹果</td>
+				<td>9000</td>
+				<td>美国</td>
+			</tr>
+			<tr>
+				<td>小米</td>
+				<td>5000</td>
+				<td>中国</td>
+			</tr>
+			<tr>
+				<td>华为</td>
+				<td>9000</td>
+				<td>中国</td>
+			</tr>
+		</tbody>
+	</table>
+<input type='file' id='file-list'>
+<script type="text/javascript">
+	document.querySelector('input').onchange=function()
+	{
+	var reader=new FileReader();
+	var files=this.files;
+	if(/image/.test(files[0].type)){
+		reader.readAsDataURL(files[0]);
+		type='image';
+	}else
+	{
+		reader.readAsText(files[0],"gb2312");
+		console.log(reader.result);
+		type='text'
+	}
+	reader.onload=function(){
+		var output=document.createElement('div');
+		var html='';
+		switch(type)
+		{
+			case "image":
+				html='<img src=\''+reader.result+'\'>';
+				break;
+			case "text":
+				html=textToCsv(reader.result)
+				break;
+		}
+		output.innerHTML=html;
+		document.body.appendChild(output);
+	}
+	}
+
+	function textToCsv(data) {
+    var allRows = data.split(/\s/);
+    var table = '<table>';
+    for (var singleRow = 0; singleRow < allRows.length - 1; singleRow++) {
+        if (singleRow === 0) {
+            table += '<thead>';
+            table += '<tr>';
+        } else {
+            table += '<tr>';
+        }
+        var rowCells = allRows[singleRow].split(',');
+        for (var rowCell = 0; rowCell < rowCells.length; rowCell++) {
+            if (singleRow === 0) {
+                // 表格的标题
+                table += '<th>';
+                table += rowCells[rowCell];
+                table += '</th>';
+            } else {
+                // 表格内容
+                table += '<td>';
+                table += rowCells[rowCell];
+                table += '</td>';
+            }
+        }
+        if (singleRow === 0) {
+            table += '</tr>';
+            table += '</thead>';
+            table += '<tbody>';
+        } else {
+            table += '</tr>';
+        }
+    }
+    table += '</tbody>';
+    table += '</table>';
+    return table;
+}
+
+</script>
+</body>
+</html>
